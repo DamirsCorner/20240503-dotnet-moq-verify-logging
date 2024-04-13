@@ -8,15 +8,17 @@ public static class MockExtensions
     public static void VerifyLog<T>(
         this Mock<ILogger<T>> loggerMock,
         LogLevel logLevel,
-        string message
+        string message,
+        int? eventId = null,
+        Func<Exception, bool>? exceptionPredicate = null
     )
     {
         loggerMock.Verify(logger =>
             logger.Log(
                 logLevel,
-                It.IsAny<EventId>(),
+                It.Is<EventId>(e => !eventId.HasValue || eventId.Value == e.Id),
                 It.Is<It.IsAnyType>((value, _) => value.ToString()!.Contains(message)),
-                It.IsAny<Exception>(),
+                It.Is<Exception>(e => exceptionPredicate == null || exceptionPredicate(e)),
                 It.IsAny<Func<It.IsAnyType, Exception?, string>>()
             )
         );

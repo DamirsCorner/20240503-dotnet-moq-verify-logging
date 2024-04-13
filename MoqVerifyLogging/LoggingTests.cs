@@ -15,4 +15,30 @@ public class LoggingTests
 
         loggerMock.VerifyLog(LogLevel.Information, "Hello, world!");
     }
+
+    [Test]
+    public void LogsEventAtInformationLevel()
+    {
+        var loggerMock = new Mock<ILogger<Service>>();
+        var service = new Service(loggerMock.Object);
+
+        service.LogEvent(new EventId(1), "Event message");
+
+        loggerMock.VerifyLog(LogLevel.Information, "Event message", 1);
+    }
+
+    [Test]
+    public void LogsException()
+    {
+        var loggerMock = new Mock<ILogger<Service>>();
+        var service = new Service(loggerMock.Object);
+
+        service.LogException(new NullReferenceException());
+
+        loggerMock.VerifyLog(
+            LogLevel.Error,
+            "An error occurred",
+            exceptionPredicate: e => e is NullReferenceException
+        );
+    }
 }
