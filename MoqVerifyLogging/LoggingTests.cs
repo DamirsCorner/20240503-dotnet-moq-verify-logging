@@ -13,14 +13,6 @@ public class LoggingTests
 
         service.LogMessage("Hello, world!");
 
-        loggerMock.Verify(logger =>
-            logger.Log(
-                LogLevel.Information,
-                It.IsAny<EventId>(),
-                It.Is<It.IsAnyType>((value, _) => value.ToString()!.Contains("Hello, world!")),
-                It.IsAny<Exception>(),
-                It.IsAny<Func<It.IsAnyType, Exception?, string>>()
-            )
-        );
+        loggerMock.VerifyLog(LogLevel.Information, "Hello, world!");
     }
 }
